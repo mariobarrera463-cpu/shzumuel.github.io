@@ -29,9 +29,9 @@ export const loginWithGoogle = async () => {
     }
     return user;
   } catch (error) {
-    // If user closed the popup, don't treat it as a critical system error
-    if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
-      console.log('Login cancelled by user');
+    // If user closed the popup or it was blocked, don't treat it as a critical system error
+    if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-blocked') {
+      console.log('Login cancelled or blocked by user/browser');
       return null;
     }
     handleFirestoreError(error, 'WRITE', 'users');
