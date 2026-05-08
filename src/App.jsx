@@ -119,7 +119,7 @@ export default function App() {
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              <AnimatePresence mode="popLayout">
+              <AnimatePresence>
                 {filteredGames.map((game) => (
                   <GameCard 
                     key={game.id} 
@@ -152,12 +152,16 @@ export default function App() {
 
       <Footer />
 
-      <GameModal 
-        game={selectedGame} 
-        onClose={() => setSelectedGame(null)} 
-        user={user}
-        onUpdatePlayTime={updatePlayTime}
-      />
+      <AnimatePresence>
+        {selectedGame && (
+          <GameModal 
+            game={selectedGame} 
+            onClose={() => setSelectedGame(null)} 
+            user={user}
+            onUpdatePlayTime={updatePlayTime}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { X, ExternalLink, Star, Info, Share2, MessageCircle } from 'lucide-react';
 
 export function GameModal({ game, onClose, user, onUpdatePlayTime }) {
-  if (!game) return null;
-
   const rating = game.rating || (4.5 + Math.random() * 0.4).toFixed(1);
 
   useEffect(() => {
@@ -19,20 +17,19 @@ export function GameModal({ game, onClose, user, onUpdatePlayTime }) {
   }, [user, game.id, onUpdatePlayTime]);
 
   return (
-    <AnimatePresence>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[60] flex items-center justify-center p-2 sm:p-4 bg-black/95 backdrop-blur-md"
+    >
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[60] flex items-center justify-center p-2 sm:p-4 bg-black/95 backdrop-blur-md"
+        initial={{ scale: 0.9, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.9, y: 20 }}
+        className="relative w-full max-w-6xl bg-gaming-dark border border-gaming-border rounded-2xl sm:rounded-3xl overflow-y-auto custom-scrollbar shadow-2xl flex flex-col h-[98vh] sm:h-[95vh]"
+        id="game-modal-container"
       >
-        <motion.div
-          initial={{ scale: 0.9, y: 20 }}
-          animate={{ scale: 1, y: 0 }}
-          exit={{ scale: 0.9, y: 20 }}
-          className="relative w-full max-w-6xl bg-gaming-dark border border-gaming-border rounded-2xl sm:rounded-3xl overflow-y-auto custom-scrollbar shadow-2xl flex flex-col h-[98vh] sm:h-[95vh]"
-          id="game-modal-container"
-        >
           {/* Header - Sticky */}
           <div className="sticky top-0 z-20 flex items-center justify-between p-3 sm:p-4 border-b border-gaming-border bg-gaming-dark/80 backdrop-blur-md shrink-0">
             <div className="flex items-center gap-3">
@@ -191,6 +188,5 @@ export function GameModal({ game, onClose, user, onUpdatePlayTime }) {
           </div>
         </motion.div>
       </motion.div>
-    </AnimatePresence>
-  );
-}
+    );
+  }
