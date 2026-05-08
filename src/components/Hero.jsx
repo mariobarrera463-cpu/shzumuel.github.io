@@ -1,15 +1,35 @@
+import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Play, TrendingUp } from 'lucide-react';
 
 export function Hero({ featuredGame, onPlay }) {
+  const [imgSrc, setImgSrc] = useState(featuredGame?.thumbnail);
+  const [hasError, setHasError] = useState(false);
+
+  if (!featuredGame) return null;
+  
+  const fallbackImage = 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200&auto=format&fit=crop';
+
   return (
-    <div className="relative w-full h-[500px] rounded-3xl overflow-hidden mb-12 border border-gaming-border">
-      <img
-        src={featuredGame.thumbnail}
-        alt="Featured Game"
-        className="absolute inset-0 w-full h-full object-cover"
-        referrerPolicy="no-referrer"
-      />
+    <div className="relative w-full h-[500px] rounded-3xl overflow-hidden mb-12 border border-gaming-border bg-gaming-surface">
+      {!hasError ? (
+        <img
+          src={imgSrc}
+          alt="Featured Game"
+          className="absolute inset-0 w-full h-full object-cover"
+          referrerPolicy="no-referrer"
+          onError={() => {
+            setHasError(true);
+            setImgSrc(fallbackImage);
+          }}
+        />
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center opacity-10">
+          <span className="text-[200px] font-display text-gaming-neon uppercase italic leading-none select-none">
+            {featuredGame.title}
+          </span>
+        </div>
+      )}
       
       <div className="absolute inset-0 bg-gradient-to-r from-gaming-dark via-gaming-dark/60 to-transparent" />
       

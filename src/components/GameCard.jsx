@@ -1,7 +1,13 @@
+import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Play, Star } from 'lucide-react';
+import { Play, Star, Heart } from 'lucide-react';
 
-export function GameCard({ game, onClick }) {
+export function GameCard({ game, onClick, isFavorite, onToggleFavorite, isLoggedIn }) {
+  const [imgSrc, setImgSrc] = useState(game.thumbnail);
+  const [hasError, setHasError] = useState(false);
+
+  const fallbackImage = `https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop`;
+
   return (
     <motion.div
       layout
@@ -13,15 +19,40 @@ export function GameCard({ game, onClick }) {
       onClick={() => onClick(game)}
       id={`game-card-${game.id}`}
     >
-      <div className="relative aspect-video overflow-hidden">
-        <img
-          src={game.thumbnail}
-          alt={game.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          referrerPolicy="no-referrer"
-        />
+      <div className="relative aspect-video overflow-hidden bg-gaming-border">
+        {!hasError ? (
+          <img
+            src={imgSrc}
+            alt={game.title}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            referrerPolicy="no-referrer"
+            onError={() => {
+              setHasError(true);
+              setImgSrc(fallbackImage);
+            }}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gaming-surface group-hover:bg-gaming-neon/5 transition-colors">
+            <span className="text-4xl font-display text-gaming-neon/20 group-hover:text-gaming-neon/40 uppercase italic">
+              {game.title.charAt(0)}
+            </span>
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-gaming-dark/80 to-transparent" />
         
+        {/* Favorite Button */}
+        {isLoggedIn && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleFavorite(game.id);
+            }}
+            className="absolute top-2 right-2 p-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white hover:text-gaming-neon transition-all z-10"
+          >
+            <Heart size={14} fill={isFavorite ? "#39FF14" : "none"} color={isFavorite ? "#39FF14" : "currentColor"} />
+          </button>
+        )}
+
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <div className="w-12 h-12 bg-gaming-neon rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(57,255,20,0.6)]">
             <Play className="text-black fill-black ml-1" size={24} />
@@ -40,7 +71,7 @@ export function GameCard({ game, onClick }) {
           </h3>
           <div className="flex items-center gap-1 text-xs text-yellow-500">
             <Star size={12} fill="currentColor" />
-            <span>4.8</span>
+            <span>{game.rating || (4.5 + Math.random() * 0.5).toFixed(1)}</span>
           </div>
         </div>
         <p className="text-gray-400 text-xs line-clamp-2 mb-3">
@@ -48,7 +79,7 @@ export function GameCard({ game, onClick }) {
         </p>
         
         <div className="flex flex-wrap gap-2">
-          {game.tags.slice(0, 2).map((tag) => (
+          {(game.tags || []).slice(0, 2).map((tag) => (
             <span key={tag} className="text-[10px] font-mono text-gray-500 border border-gaming-border px-1.5 rounded">
               #{tag}
             </span>

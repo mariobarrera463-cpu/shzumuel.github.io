@@ -1,7 +1,8 @@
-import { Search, User } from 'lucide-react';
+import { Search, User, LogOut, LogIn } from 'lucide-react';
 import { StarOfDavid } from './StarOfDavid';
+import { loginWithGoogle, logout } from '../lib/firebase';
 
-export function Navbar({ onSearch }) {
+export function Navbar({ onSearch, user, userData }) {
   return (
     <nav className="sticky top-0 z-50 glass-morphism border-b border-gaming-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -29,9 +30,38 @@ export function Navbar({ onSearch }) {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="text-[10px] font-mono tracking-widest text-gaming-neon uppercase">
-              Secure Link Active
+            <div className="hidden lg:block text-[10px] font-mono tracking-widest text-gaming-neon uppercase mr-4">
+              {user ? `Welcome, ${user.displayName}` : 'Secure Link Active'}
             </div>
+
+            {user ? (
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full border border-gaming-neon overflow-hidden hidden sm:block">
+                  {user.photoURL ? (
+                    <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-gaming-surface flex items-center justify-center">
+                      <User size={16} className="text-gaming-neon" />
+                    </div>
+                  )}
+                </div>
+                <button 
+                  onClick={logout}
+                  className="p-2 rounded-full bg-gaming-surface border border-gaming-border text-gray-400 hover:text-red-500 hover:border-red-500/50 transition-all"
+                  title="Logout"
+                >
+                  <LogOut size={18} />
+                </button>
+              </div>
+            ) : (
+              <button 
+                onClick={loginWithGoogle}
+                className="flex items-center gap-2 px-4 py-2 bg-gaming-neon text-black font-bold text-sm rounded-full shadow-[0_0_15px_rgba(57,255,20,0.3)] hover:scale-105 active:scale-95 transition-all"
+              >
+                <LogIn size={16} />
+                <span>Login</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
