@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Anton&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-display: "Anton", sans-serif;
+
+  --color-gaming-neon: #39FF14;
+  --color-gaming-blue: #00D1FF;
+  --color-gaming-purple: #BC00FF;
+  --color-gaming-dark: #0A0A0A;
+  --color-gaming-surface: #151515;
+  --color-gaming-border: #222222;
+}
+
+@layer base {
+  body {
+    @apply bg-gaming-dark text-white font-sans antialiased;
+  }
+}
+
+.gaming-grid {
+  background-image: radial-gradient(var(--color-gaming-border) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.glass-morphism {
+  @apply backdrop-blur-md bg-gaming-surface/80 border border-gaming-border;
+}
