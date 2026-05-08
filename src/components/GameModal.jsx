@@ -89,6 +89,7 @@ export function GameModal({ game, onClose, user, onUpdatePlayTime }) {
                 scrolling="no"
                 allow={game.allow || "autoplay; fullscreen; keyboard"}
                 allowFullScreen
+                referrerPolicy="no-referrer"
               />
               
               <div className="absolute bottom-4 left-4 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
