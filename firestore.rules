@@ -26,7 +26,7 @@ service cloud.firestore {
       allow create: if isOwner(userId) && isValidUser(request.resource.data);
       allow update: if isOwner(userId) 
                     && isValidUser(request.resource.data)
-                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['favorites', 'lastPlayed', 'updatedAt', 'displayName', 'photoURL']);
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['favorites', 'lastPlayed', 'playTime', 'updatedAt', 'displayName', 'photoURL']);
     }
   }
 }

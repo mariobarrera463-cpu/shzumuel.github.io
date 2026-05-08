@@ -8,9 +8,10 @@ import { Footer } from './components/Footer';
 import { GAMES, CATEGORIES } from './data';
 import { Filter } from 'lucide-react';
 import { StarOfDavid } from './components/StarOfDavid';
-import { auth, db, toggleFavorite, addToLastPlayed } from './lib/firebase';
+import { auth, db, toggleFavorite, addToLastPlayed, updatePlayTime } from './lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
+import { StatsDashboard } from './components/StatsDashboard';
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -48,7 +49,7 @@ export default function App() {
     
     if (selectedCategory === 'My Games' && userData?.favorites) {
       list = GAMES.filter(game => userData.favorites.includes(game.id));
-    } else if (selectedCategory !== 'All') {
+    } else if (selectedCategory !== 'All' && selectedCategory !== 'Stats') {
       list = GAMES.filter(game => game.category === selectedCategory);
     }
 
@@ -86,16 +87,16 @@ export default function App() {
         <div className="mb-10">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-display text-4xl tracking-tighter uppercase italic">
-              {searchQuery ? `Results for "${searchQuery}"` : `Game Hub`}
+              {searchQuery ? `Results for "${searchQuery}"` : (selectedCategory === 'Stats' ? 'Your Gaming Insight' : `Game Hub`)}
             </h2>
             <div className="flex items-center gap-2 text-gray-500">
               <Filter size={16} />
-              <span className="text-xs font-bold uppercase tracking-widest">{filteredGames.length} Titles Available</span>
+              <span className="text-xs font-bold uppercase tracking-widest">{selectedCategory === 'Stats' ? 'Data analytics active' : `${filteredGames.length} Titles Available`}</span>
             </div>
           </div>
 
           <div className="flex flex-wrap gap-3">
-            {['All', ...(user ? ['My Games'] : []), ...(CATEGORIES || []).filter(c => c !== 'All')].map((category) => (
+            {['All', ...(user ? ['My Games', 'Stats'] : []), ...(CATEGORIES || []).filter(c => c !== 'All')].map((category) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
@@ -113,33 +114,39 @@ export default function App() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          <AnimatePresence mode="popLayout">
-            {filteredGames.map((game) => (
-              <GameCard 
-                key={game.id} 
-                game={game} 
-                onClick={handlePlayGame} 
-                isLoggedIn={!!user}
-                isFavorite={userData?.favorites?.includes(game.id)}
-                onToggleFavorite={handleToggleFavorite}
-              />
-            ))}
-          </AnimatePresence>
-        </div>
-
-        {filteredGames.length === 0 && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-32 glass-morphism rounded-3xl border-dashed"
-          >
-            <div className="text-gaming-neon mb-6 flex justify-center animate-pulse">
-              <StarOfDavid size={80} fill="currentColor" />
+        {selectedCategory === 'Stats' && user ? (
+          <StatsDashboard user={user} userData={userData} onPlayGame={handlePlayGame} />
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <AnimatePresence mode="popLayout">
+                {filteredGames.map((game) => (
+                  <GameCard 
+                    key={game.id} 
+                    game={game} 
+                    onClick={handlePlayGame} 
+                    isLoggedIn={!!user}
+                    isFavorite={userData?.favorites?.includes(game.id)}
+                    onToggleFavorite={handleToggleFavorite}
+                  />
+                ))}
+              </AnimatePresence>
             </div>
-            <h3 className="text-2xl font-display uppercase italic tracking-tight text-white mb-2">Initialize Gaming Sequence</h3>
-            <p className="text-gray-500 max-w-xs mx-auto">Upload or connect your game database to populate the Jews Games hub.</p>
-          </motion.div>
+
+            {filteredGames.length === 0 && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-32 glass-morphism rounded-3xl border-dashed"
+              >
+                <div className="text-gaming-neon mb-6 flex justify-center animate-pulse">
+                  <StarOfDavid size={80} fill="currentColor" />
+                </div>
+                <h3 className="text-2xl font-display uppercase italic tracking-tight text-white mb-2">Initialize Gaming Sequence</h3>
+                <p className="text-gray-500 max-w-xs mx-auto">Upload or connect your game database to populate the Jews Games hub.</p>
+              </motion.div>
+            )}
+          </>
         )}
       </main>
 
@@ -148,6 +155,8 @@ export default function App() {
       <GameModal 
         game={selectedGame} 
         onClose={() => setSelectedGame(null)} 
+        user={user}
+        onUpdatePlayTime={updatePlayTime}
       />
     </div>
   );

@@ -1,11 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, ExternalLink, Star, Info, Share2, MessageCircle } from 'lucide-react';
 
-export function GameModal({ game, onClose }) {
+export function GameModal({ game, onClose, user, onUpdatePlayTime }) {
   if (!game) return null;
 
   const rating = game.rating || (4.5 + Math.random() * 0.4).toFixed(1);
+
+  useEffect(() => {
+    if (!user || !onUpdatePlayTime) return;
+    
+    // Track play time every 10 seconds
+    const interval = setInterval(() => {
+      onUpdatePlayTime(user.uid, game.id, 10);
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [user, game.id, onUpdatePlayTime]);
 
   return (
     <AnimatePresence>

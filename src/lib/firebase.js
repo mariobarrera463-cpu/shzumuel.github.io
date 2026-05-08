@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
-import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, arrayRemove, getDocFromServer } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, arrayRemove, getDocFromServer, increment } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 
 const app = initializeApp(firebaseConfig);
@@ -60,6 +60,19 @@ export const addToLastPlayed = async (userId, gameId) => {
     const userRef = doc(db, 'users', userId);
     await updateDoc(userRef, {
       lastPlayed: arrayUnion(gameId),
+      updatedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    handleFirestoreError(error, 'UPDATE', path);
+  }
+};
+
+export const updatePlayTime = async (userId, gameId, seconds) => {
+  const path = `users/${userId}`;
+  try {
+    const userRef = doc(db, 'users', userId);
+    await updateDoc(userRef, {
+      [`playTime.${gameId}`]: increment(seconds),
       updatedAt: new Date().toISOString()
     });
   } catch (error) {

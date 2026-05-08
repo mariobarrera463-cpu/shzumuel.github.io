@@ -9,6 +9,11 @@
         "photoURL": { "type": "string" },
         "favorites": { "type": "array", "items": { "type": "string" } },
         "lastPlayed": { "type": "array", "items": { "type": "string" } },
+        "playTime": { 
+          "type": "object", 
+          "description": "Total seconds played per game id",
+          "additionalProperties": { "type": "integer" }
+        },
         "createdAt": { "type": "string", "format": "date-time" },
         "updatedAt": { "type": "string", "format": "date-time" }
       },
