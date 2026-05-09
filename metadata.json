@@ -1,0 +1,12 @@
+{
+  "name": "Jews Games",
+  "description": "The ultimate unblocked games hub. Clean, fast, and secure gaming experience.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation",
+    "fullscreen",
+    "gamepad"
+  ],
+  "majorCapabilities": []
+}
